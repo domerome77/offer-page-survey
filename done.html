@@ -3,25 +3,23 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Your favourite · GoOpti survey</title>
+<title>Almost done · GoOpti survey</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Rethink+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="survey.css?v=3">
+<link rel="stylesheet" href="survey.css?v=4">
 </head>
 <body>
 <main class="wrap stack">
   <div class="logo">Go<b>Opti</b></div>
 
   <form class="card stack" id="form">
-    <h1 class="h1">Last question</h1>
-    <p>If you had to book on one of these pages, which would you pick? Tap a version to look at it again.</p>
-    <ol class="plist" id="list"></ol>
+    <h1 class="h1">Almost done</h1>
     <div>
-      <label class="q__label" for="why">Why this one? <span class="muted">(optional)</span></label>
-      <textarea id="why"></textarea>
+      <label class="q__label" for="why">Anything else you'd like to tell us? <span class="muted">(optional)</span></label>
+      <textarea id="why" placeholder="Which version did you like best, what could be better…"></textarea>
     </div>
-    <p class="small" id="err" style="color:var(--error)" hidden>Please pick one version.</p>
-    <button class="btn btn--block" type="submit" id="submit">Finish</button>
+    <p class="small" id="err" style="color:var(--error)" hidden></p>
+    <button class="btn btn--block" type="submit" id="submit">Submit</button>
     <a class="btn btn--ghost btn--block" href="index.html">Back to all versions</a>
   </form>
 
@@ -31,31 +29,18 @@
     <a class="btn btn--ghost btn--block" href="index.html">Change my answers</a>
   </section>
 </main>
-<script src="survey.js?v=3"></script>
+<script src="survey.js?v=4"></script>
 <script>
 (function () {
   const m = SV.me();
-  const rated = m.order.filter(n => m.done[n]);
-  if (rated.length < 2) { location.replace('index.html'); return; }
-
-  document.getElementById('list').innerHTML = rated.map(n => {
-    const i = m.order.indexOf(n) + 1;
-    return '<li style="display:flex;gap:8px"><label class="fav" style="flex:1;display:flex;align-items:center;gap:12px;padding:12px 16px;border-radius:12px;background:#fff;box-shadow:inset 0 0 0 1px var(--border);cursor:pointer">' +
-      '<input type="radio" name="fav" value="' + SV.esc(n) + '"' + (m.fav === n ? ' checked' : '') + ' style="width:20px;height:20px;accent-color:var(--brand)">' +
-      '<span class="num" style="width:32px;height:32px;border-radius:999px;display:inline-flex;align-items:center;justify-content:center;background:var(--bg-muted);font-weight:700">' + i + '</span>' +
-      '<span>Version ' + i + '</span></label>' +
-      '<a class="btn btn--ghost" style="padding:0 16px" href="proto.html?v=' + encodeURIComponent(n) + '" aria-label="Look at version ' + i + ' again">View</a></li>';
-  }).join('');
+  if (!m.order.some(n => m.done[n])) { location.replace('index.html'); return; }
 
   const form = document.getElementById('form'), err = document.getElementById('err'), submit = document.getElementById('submit');
-  form.addEventListener('change', () => { err.hidden = true; });
   form.addEventListener('submit', async e => {
     e.preventDefault();
-    const r = form.querySelector('input[name=fav]:checked');
-    if (!r) { err.hidden = false; return; }
-    submit.disabled = true; submit.textContent = 'Saving…';
+    submit.disabled = true; submit.textContent = 'Saving…'; err.hidden = true;
     try {
-      await SV.saveFavourite(r.value, document.getElementById('why').value.trim());
+      await SV.saveFinal(document.getElementById('why').value.trim());
       form.hidden = true; document.getElementById('thanks').hidden = false; scrollTo(0, 0);
     } catch (x) {
       submit.disabled = false; submit.textContent = 'Try again';

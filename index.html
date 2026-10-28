@@ -6,7 +6,7 @@
 <title>GoOpti offer page survey</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Rethink+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="survey.css?v=3">
+<link rel="stylesheet" href="survey.css?v=4">
 </head>
 <body>
 <main class="wrap stack">
@@ -30,11 +30,11 @@
     <div class="progress"><i id="progress" style="width:0"></i></div>
     <ol class="plist" id="list"></ol>
     <a class="btn btn--block" id="go" href="#">Start</a>
-    <a class="btn btn--ghost btn--block" id="fav" href="done.html" hidden>Pick your favourite and finish</a>
+    <a class="btn btn--ghost btn--block" id="fav" href="done.html" hidden>Finish</a>
   </section>
   <p class="small muted" style="text-align:center"><a href="#" id="restart">Start over as a new person</a></p>
 </main>
-<script src="survey.js?v=3"></script>
+<script src="survey.js?v=4"></script>
 <script>
 (function () {
   const m = SV.me(), total = SV.PROTOS.length;
@@ -59,8 +59,8 @@
     go.href = 'proto.html?v=' + encodeURIComponent(next);
     go.textContent = done ? 'Continue with version ' + (m.order.indexOf(next) + 1) : 'Start';
   } else go.hidden = true;
-  // the favourite question makes sense once there is something to compare
-  if (done >= 2) document.getElementById('fav').hidden = false;
+  // finishing is offered once at least one version is rated
+  if (done >= 1) document.getElementById('fav').hidden = false;
   if (!next) document.getElementById('fav').className = 'btn btn--block';
 
   document.getElementById('restart').addEventListener('click', e => {

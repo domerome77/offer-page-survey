@@ -82,7 +82,7 @@ window.SV = (function () {
     let m = null;
     try { m = JSON.parse(localStorage.getItem(ME_KEY)); } catch (e) {}
     if (!m || !orderOk(m.order)) {
-      m = { rid: uid(), order: makeOrder(), done: {}, fav: null, name: '' };
+      m = { rid: uid(), order: makeOrder(), done: {}, finished: false, name: '' };
       saveMe(m);
     }
     return m;
@@ -93,22 +93,22 @@ window.SV = (function () {
   // a leading space stops the Sheet from reading free text like "=1+1" as a formula
   const safe = t => (/^[=+\-@]/.test(t || '') ? ' ' + t : t || '');
 
-  // One document per respondent and prototype (re-rating overwrites), one per respondent for the favourite.
+  // One document per respondent and prototype (re-rating overwrites), one per respondent for the closing comment.
   async function saveRating(n, answers, comment) {
     const m = me();
     m.done[n] = Object.assign({ comment }, answers);
     saveMe(m);
     await store.save({ id: m.rid + ':' + n, type: 'rating', rid: m.rid, name: safe(m.name), v: n, ...answers, comment: safe(comment), ts: new Date().toISOString() });
   }
-  async function saveFavourite(n, comment) {
+  async function saveFinal(comment) {
     const m = me();
-    m.fav = n;
+    m.finished = true;
     saveMe(m);
-    await store.save({ id: m.rid + ':fav', type: 'fav', rid: m.rid, name: safe(m.name), v: n, comment: safe(comment), ts: new Date().toISOString() });
+    await store.save({ id: m.rid + ':final', type: 'final', rid: m.rid, name: safe(m.name), v: '', comment: safe(comment), ts: new Date().toISOString() });
   }
 
   const proto = n => PROTOS.find(p => p.n === n);
   const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 
-  return { PROTOS, QUESTIONS, FACES, CONFIG, store, me, saveMe, restart, saveRating, saveFavourite, proto, esc };
+  return { PROTOS, QUESTIONS, FACES, CONFIG, store, me, saveMe, restart, saveRating, saveFinal, proto, esc };
 })();

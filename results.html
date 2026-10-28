@@ -7,7 +7,7 @@
 <title>Survey results · GoOpti</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Rethink+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="survey.css?v=3">
+<link rel="stylesheet" href="survey.css?v=4">
 </head>
 <body>
 <main class="wrap wrap--wide stack">
@@ -25,9 +25,9 @@
 
   <section class="card stack">
     <h2 class="h2">Ranking</h2>
-    <p class="small muted">Each question is scored 1 (worst) to 5 (best). <b>Overall</b> is the average of the two. <b>Favourite</b> counts how many people picked it as the one they'd book on.</p>
+    <p class="small muted">Each question is scored 1 (worst) to 5 (best). <b>Overall</b> is the average of the two.</p>
     <div class="table-scroll"><table>
-      <thead><tr><th></th><th>Prototype</th><th>Ratings</th><th>Understand</th><th>Like</th><th>Overall</th><th>Favourite</th></tr></thead>
+      <thead><tr><th></th><th>Prototype</th><th>Ratings</th><th>Understand</th><th>Like</th><th>Overall</th></tr></thead>
       <tbody id="rows"></tbody>
     </table></div>
   </section>
@@ -51,7 +51,7 @@
   </form>
 </dialog>
 
-<script src="survey.js?v=3"></script>
+<script src="survey.js?v=4"></script>
 <script>
 (function () {
   const esc = SV.esc, Q = SV.QUESTIONS;
@@ -64,38 +64,38 @@
   const label = p => 'Prototype ' + p.n + ' · ' + p.name;
 
   function render() {
-    const ratings = docs.filter(d => d.type === 'rating'), favs = docs.filter(d => d.type === 'fav');
+    const ratings = docs.filter(d => d.type === 'rating'), finals = docs.filter(d => d.type === 'final');
     const people = new Set(docs.map(d => d.rid)).size;
     const stats = SV.PROTOS.map(p => {
       const r = ratings.filter(d => d.v === p.n);
-      const s = { p, n: r.length, fav: favs.filter(d => d.v === p.n).length };
+      const s = { p, n: r.length };
       Q.forEach(q => { s[q.key] = avg(r.map(d => d[q.key]).filter(Number.isFinite)); });
       s.overall = s.n ? avg(Q.map(q => s[q.key])) : null;
       return s;
-    }).sort((a, b) => (b.overall ?? -1) - (a.overall ?? -1) || b.fav - a.fav);
+    }).sort((a, b) => (b.overall ?? -1) - (a.overall ?? -1));
 
     const top = stats[0] && stats[0].overall != null ? stats[0] : null;
-    const topFav = stats.slice().sort((a, b) => b.fav - a.fav)[0];
     document.getElementById('kpis').innerHTML = [
-      ['People', people], ['Ratings', ratings.length], ['Finished (picked a favourite)', favs.length],
+      ['People', people], ['Ratings', ratings.length], ['Finished', finals.length],
       ['Best overall', top ? 'P' + top.p.n + ' · ' + f1(top.overall) : '–'],
-      ['Most picked', topFav && topFav.fav ? 'P' + topFav.p.n + ' · ' + topFav.fav + '×' : '–'],
     ].map(([k, v]) => '<div class="kpi"><span class="small muted">' + k + '</span><b>' + esc(v) + '</b></div>').join('');
 
     document.getElementById('rows').innerHTML = stats.map((s, i) =>
       '<tr><td><span class="rank">' + (s.overall == null ? '–' : i + 1) + '</span></td>' +
       '<td class="name"><a href="prototypes.html?v=' + encodeURIComponent(s.p.n) + '" target="_blank" rel="noopener"><b>' + esc(s.p.n) + '</b> · ' + esc(s.p.name) + '</a></td>' +
       '<td>' + s.n + '</td>' + Q.map(q => '<td>' + bar(s[q.key]) + '</td>').join('') +
-      '<td>' + bar(s.overall, 'bar--overall') + '</td><td><b>' + s.fav + '</b></td></tr>'
+      '<td>' + bar(s.overall, 'bar--overall') + '</td></tr>'
     ).join('');
 
     const byProto = SV.PROTOS.map(p => {
-      const c = ratings.filter(d => d.v === p.n && d.comment).map(d => ({ who: d.name, txt: d.comment, tags: Q.map(q => q.key + ' ' + d[q.key]) }))
-        .concat(favs.filter(d => d.v === p.n && d.comment).map(d => ({ who: d.name, txt: d.comment, tags: ['★ favourite'] })));
+      const c = ratings.filter(d => d.v === p.n && d.comment).map(d => ({ who: d.name, txt: d.comment, tags: Q.map(q => q.key + ' ' + d[q.key]) }));
       return { p, c };
     }).filter(x => x.c.length);
+    // the closing comment of each person, not tied to one prototype
+    const general = finals.filter(d => d.comment).map(d => ({ who: d.name, txt: d.comment, tags: [] }));
+    if (general.length) byProto.push({ p: { n: '', name: 'General comments' }, c: general, general: true });
     document.getElementById('comments').innerHTML = byProto.length ? byProto.map(x =>
-      '<h3 style="font-size:16px;margin-top:12px">' + esc(label(x.p)) + '</h3><ul class="comments">' +
+      '<h3 style="font-size:16px;margin-top:12px">' + esc(x.general ? 'General comments' : label(x.p)) + '</h3><ul class="comments">' +
       x.c.map(c => '<li>' + c.tags.map(t => '<span class="tag">' + esc(t) + '</span>').join('') +
         '<span class="small muted">' + esc(c.who || 'Anonymous') + '</span><div>' + esc(c.txt) + '</div></li>').join('') + '</ul>'
     ).join('') : '<p class="muted">No comments yet.</p>';
