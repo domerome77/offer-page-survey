@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>GoOpti offer page survey</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Rethink+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="survey.css">
+</head>
+<body>
+<main class="wrap stack">
+  <div class="logo">Go<b>Opti</b></div>
+  <section class="card stack">
+    <h1 class="h1">Help us choose the new ride page</h1>
+    <p>We made <b id="count">11</b> versions of the page where you pick your ride. Please try each one and tell us what you think. It takes about <b>10 minutes</b>.</p>
+    <div class="task"><b>Imagine:</b> you're flying from Venice Airport. You need a ride from Ljubljana on Thu 17 Sep that gets you there by 10:15. On each version, look at the options and pick the ride you'd book.</div>
+    <p class="small muted">For each version we ask 3 quick questions: is it clear, is it easy, do you like it. There are no wrong answers, we're testing the pages, not you.</p>
+    <div id="name-box">
+      <label class="q__label" for="name">Your name <span class="muted">(optional)</span></label>
+      <input type="text" id="name" autocomplete="name" placeholder="e.g. Ana">
+    </div>
+  </section>
+
+  <section class="card stack">
+    <div style="display:flex;align-items:center;gap:12px">
+      <h2 class="h2">Versions to try</h2>
+      <span class="small muted" id="progress-text" style="margin-left:auto"></span>
+    </div>
+    <div class="progress"><i id="progress" style="width:0"></i></div>
+    <ol class="plist" id="list"></ol>
+    <a class="btn btn--block" id="go" href="#">Start</a>
+    <a class="btn btn--ghost btn--block" id="fav" href="done.html" hidden>Pick your favourite and finish</a>
+  </section>
+  <p class="small muted" style="text-align:center"><a href="#" id="restart">Start over as a new person</a></p>
+</main>
+<script src="survey.js"></script>
+<script>
+(function () {
+  const m = SV.me(), total = SV.PROTOS.length;
+  const name = document.getElementById('name');
+  name.value = m.name || '';
+  name.addEventListener('input', () => { const x = SV.me(); x.name = name.value.trim(); SV.saveMe(x); });
+  document.getElementById('count').textContent = total;
+
+  const done = m.order.filter(n => m.done[n]).length;
+  const next = m.order.find(n => !m.done[n]);
+  document.getElementById('list').innerHTML = m.order.map((n, i) => {
+    const d = m.done[n];
+    return '<li><a href="proto.html?v=' + encodeURIComponent(n) + '"' + (d ? ' class="is-done"' : '') + '>' +
+      '<span class="num">' + (d ? '✓' : i + 1) + '</span><span>Version ' + (i + 1) + '</span>' +
+      '<span class="state">' + (d ? 'Rated' : 'Not tried yet') + '</span></a></li>';
+  }).join('');
+  document.getElementById('progress').style.width = (done / total * 100) + '%';
+  document.getElementById('progress-text').textContent = done + ' of ' + total + ' rated';
+
+  const go = document.getElementById('go');
+  if (next) {
+    go.href = 'proto.html?v=' + encodeURIComponent(next);
+    go.textContent = done ? 'Continue with version ' + (m.order.indexOf(next) + 1) : 'Start';
+  } else go.hidden = true;
+  // the favourite question makes sense once there is something to compare
+  if (done >= 2) document.getElementById('fav').hidden = false;
+  if (!next) document.getElementById('fav').className = 'btn btn--block';
+
+  document.getElementById('restart').addEventListener('click', e => {
+    e.preventDefault();
+    if (confirm('Start the survey again as a new person? Your answers so far stay saved.')) { SV.restart(); location.reload(); }
+  });
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Try a version · GoOpti survey</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Rethink+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="survey.css">
+</head>
+<body class="is-proto">
+<div class="pp">
+  <div class="pp__top">
+    <a class="back" href="index.html">← All versions</a>
+    <span class="step" id="step"></span>
+  </div>
+
+  <iframe class="pp__frame" id="frame" title="Prototype"></iframe>
+
+  <div class="pp__bar">
+    <span class="task-mini">Pick the ride you'd book, then rate it.</span>
+    <button class="btn pp__open" id="open" type="button">Rate it</button>
+  </div>
+  <div class="scrim" id="scrim"></div>
+
+  <form class="card pp__side stack" id="form" novalidate>
+    <button class="sheet-x" type="button" id="close" aria-label="Close">✕</button>
+    <h1 class="h2" id="title">Rate this version</h1>
+    <div class="task task--side small"><b>Your task:</b> a ride from Ljubljana to Venice Airport on Thu 17 Sep, arriving by 10:15. Pick the ride you'd book and tap around.</div>
+    <div id="qs"></div>
+    <div>
+      <label class="q__label" for="comment">Anything to add? <span class="muted">(optional)</span></label>
+      <textarea id="comment" placeholder="What was confusing, what did you like…"></textarea>
+    </div>
+    <p class="small" id="err" style="color:var(--error)" hidden>Please answer all 3 questions.</p>
+    <button class="btn btn--block" type="submit" id="submit">Save and next</button>
+  </form>
+</div>
+<script src="survey.js"></script>
+<script>
+(function () {
+  const n = new URLSearchParams(location.search).get('v');
+  if (!SV.proto(n)) { location.replace('index.html'); return; }
+  const m = SV.me(), pos = m.order.indexOf(n), total = m.order.length, prev = m.done[n] || {};
+
+  document.getElementById('frame').src = 'prototypes.html?v=' + encodeURIComponent(n);
+  document.getElementById('step').textContent = 'Version ' + (pos + 1) + ' of ' + total;
+  document.getElementById('title').textContent = 'Rate version ' + (pos + 1);
+  document.title = 'Version ' + (pos + 1) + ' · GoOpti survey';
+
+  document.getElementById('qs').innerHTML = SV.QUESTIONS.map(q =>
+    '<fieldset class="q"><legend class="q__label">' + SV.esc(q.label) + '</legend><div class="scale">' +
+    SV.FACES.map((f, i) => {
+      const id = q.key + (i + 1), v = i + 1;
+      return '<input type="radio" name="' + q.key + '" id="' + id + '" value="' + v + '"' + (prev[q.key] === v ? ' checked' : '') + '>' +
+        '<label for="' + id + '" title="' + v + ' of 5"><span class="f" aria-hidden="true">' + f + '</span><span class="d">' + v + '</span></label>';
+    }).join('') +
+    '</div><div class="scale__ends"><span>' + SV.esc(q.low) + '</span><span>' + SV.esc(q.high) + '</span></div></fieldset>'
+  ).join('');
+  document.getElementById('comment').value = prev.comment || '';
+
+  // next unrated version after this one, wrapping round; the favourite page when all are rated
+  function nextUrl(done) {
+    for (let k = 1; k <= total; k++) {
+      const c = m.order[(pos + k) % total];
+      if (!done[c] && c !== n) return 'proto.html?v=' + encodeURIComponent(c);
+    }
+    return 'done.html';
+  }
+  const submit = document.getElementById('submit');
+  submit.textContent = nextUrl(Object.assign({}, m.done, { [n]: 1 })) === 'done.html' ? 'Save and finish' : 'Save and next';
+
+  const form = document.getElementById('form'), err = document.getElementById('err');
+  form.addEventListener('change', () => { err.hidden = true; });
+  form.addEventListener('submit', async e => {
+    e.preventDefault();
+    const a = {};
+    for (const q of SV.QUESTIONS) {
+      const r = form.querySelector('input[name="' + q.key + '"]:checked');
+      if (!r) { err.hidden = false; return; }
+      a[q.key] = +r.value;
+    }
+    submit.disabled = true; submit.textContent = 'Saving…';
+    try {
+      await SV.saveRating(n, a, document.getElementById('comment').value.trim());
+      location.href = nextUrl(SV.me().done);
+    } catch (x) {
+      submit.disabled = false; submit.textContent = 'Try again';
+      err.textContent = 'Could not save. Check your connection and try again.'; err.hidden = false;
+    }
+  });
+
+  // small screens: the form is a bottom sheet
+  const side = form, scrim = document.getElementById('scrim');
+  const open = on => { side.classList.toggle('is-open', on); scrim.classList.toggle('is-on', on); };
+  document.getElementById('open').addEventListener('click', () => open(true));
+  document.getElementById('close').addEventListener('click', () => open(false));
+  scrim.addEventListener('click', () => open(false));
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') open(false); });
+})();
+</script>
+</body>
+</html>
