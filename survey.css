@@ -89,7 +89,6 @@ input[type=text] { width: 100%; min-height: 48px; padding: 0 14px; border-radius
 .pp__top .step { margin-left: auto; font-size: 14px; color: var(--text-3); font-weight: 600; }
 .pp__frame { width: 390px; height: 844px; border: 0; border-radius: 54px; background: var(--bg); box-shadow: 0 0 0 1px var(--border-strong), 0 12px 40px rgba(0,0,0,.12); display: block; }
 .pp__side { position: sticky; top: 24px; }
-.pp__open { display: none; }
 .sheet-x { display: none; }
 
 /* small screens: the prototype fills the screen, the rating opens from a bar at the bottom */
@@ -98,9 +97,6 @@ input[type=text] { width: 100%; min-height: 48px; padding: 0 14px; border-radius
   .pp { display: flex; flex-direction: column; height: 100dvh; padding: 0; gap: 0; }
   .pp__top { padding: 8px 16px; background: var(--bg); border-bottom: 1px solid var(--border); flex-shrink: 0; min-height: 44px; }
   .pp__frame { flex: 1; width: 100%; height: auto; min-height: 0; border-radius: 0; box-shadow: none; }
-  .pp__bar { flex-shrink: 0; padding: 10px 16px calc(10px + env(safe-area-inset-bottom)); background: var(--bg); border-top: 1px solid var(--border); display: flex; gap: 12px; align-items: center; }
-  .pp__bar .task-mini { font-size: 13px; line-height: 17px; color: var(--text-2); flex: 1; }
-  .pp__open { display: inline-flex; flex-shrink: 0; }
   .pp__side {
     position: fixed; inset: auto 0 0 0; z-index: 10; max-height: 88dvh; overflow-y: auto;
     border-radius: 24px 24px 0 0; transform: translateY(105%); transition: transform .28s cubic-bezier(.2,.8,.2,1);
@@ -112,7 +108,9 @@ input[type=text] { width: 100%; min-height: 48px; padding: 0 14px; border-radius
   .sheet-x { display: inline-flex; position: absolute; top: 12px; right: 12px; width: 40px; height: 40px; border-radius: 999px; border: 0; background: var(--bg-muted); align-items: center; justify-content: center; cursor: pointer; font-size: 18px; }
   .pp__side .task--side { display: none; }
 }
-@media (min-width: 861px) and (min-height: 901px), (min-width: 1001px) { .pp__bar, .scrim { display: none; } }
+@media (min-width: 861px) and (min-height: 901px), (min-width: 1001px) { .scrim { display: none; } }
+@keyframes ping { 0% { box-shadow: 0 0 0 0 rgba(237,49,128,.55); } 100% { box-shadow: 0 0 0 16px rgba(237,49,128,0); } }
+.pp__side.is-ping { animation: ping .7s ease-out 2; }
 
 /* ---------- results ---------- */
 .wrap--wide { max-width: 1100px; }
@@ -139,3 +137,5 @@ tr:first-child .rank { background: var(--brand); color: #fff; }
 .row-actions { display: flex; flex-wrap: wrap; gap: 12px; }
 dialog { border: 0; border-radius: var(--radius); padding: 24px; max-width: 420px; width: calc(100% - 32px); }
 dialog::backdrop { background: rgba(0,0,0,.45); }
+
+.logo-img { display: block; height: 44px; width: auto; }

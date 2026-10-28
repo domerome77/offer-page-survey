@@ -1887,7 +1887,7 @@ GO.addonsHead = function () {
     return '<div class="cta-bar cta-bar--total cta-inline"><div class="cta-inline__total">' +
         '<div class="cta-inline__sum"><span class="t-label-lg">' + t('total') + '</span><span class="t-h2 nowrap" aria-live="polite">' + money2(sum + FEE) + '</span></div>' +
         '<div class="cta-inline__note"><button class="link t-caption c-tertiary" data-act="details" aria-label="Price details, incl. transaction fee">incl. transaction fee</button></div>' +
-      '</div><button class="btn btn--primary cta-inline__btn"' + (toRet ? ' data-act="to-return"' : '') + '>' + t(toRet ? 'chooseRet' : 'cont') + '</button></div>';
+      '</div><button class="btn btn--primary cta-inline__btn"' + (toRet ? ' data-act="to-return"' : ' data-act="continue"') + '>' + t(toRet ? 'chooseRet' : 'cont') + '</button></div>';
   }
 
   function rideKind(o) { return o.kind === 'private' ? t('rk_private') : o.kind === 'flex' ? t('rk_flex')(o.w / 60) : t('rk_fixed'); }
@@ -2335,6 +2335,8 @@ GO.addonsHead = function () {
     else if (a === 'close-sheet') closeSheet(b.closest('.ph'));
     else if (a === 'leg') { if (p.leg !== b.dataset.leg) { p.leg = b.dataset.leg; render(i, true); } }
     else if (a === 'to-return') { p.leg = 'ret'; render(i, true); }
+    // survey: Continue asks the page around this one to open the rating
+    else if (a === 'continue') { if (ONLY && window.parent !== window) window.parent.postMessage('survey-rate', '*'); }
   });
   document.addEventListener('keydown', e => { if (e.key === 'Escape') document.querySelectorAll('.ph').forEach(closeSheet); });
   // 9: dragging the gauge picks on the fly; the phone is redrawn around the live range input, which stays in place, so the drag goes on
