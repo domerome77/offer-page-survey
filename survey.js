@@ -26,7 +26,7 @@ window.SV = (function () {
   // ---------- storage ----------
   // BACKEND 'sheet' sends answers to the Google Sheet's Apps Script web app (apps-script/Code.gs).
   // Without SHEET_URL it falls back to 'local': answers stay in this browser only (for trying it out).
-  const CONFIG = { SHEET_URL: '' };
+  const CONFIG = { SHEET_URL: 'https://script.google.com/macros/s/AKfycbzoWdrtYMN9f5FxlVRyWp39W-dZ2AM3BVdUKZIRlDRWSY_tCTTAEBq_rul55RIfID6k/exec' };
   CONFIG.BACKEND = CONFIG.SHEET_URL ? 'sheet' : 'local';
 
   const LOCAL_KEY = 'ops.responses';
@@ -91,18 +91,21 @@ window.SV = (function () {
   function saveMe(m) { try { localStorage.setItem(ME_KEY, JSON.stringify(m)); } catch (e) {} }
   function restart() { try { localStorage.removeItem(ME_KEY); } catch (e) {} }
 
+  // a leading space stops the Sheet from reading free text like "=1+1" as a formula
+  const safe = t => (/^[=+\-@]/.test(t || '') ? ' ' + t : t || '');
+
   // One document per respondent and prototype (re-rating overwrites), one per respondent for the favourite.
   async function saveRating(n, answers, comment) {
     const m = me();
     m.done[n] = Object.assign({ comment }, answers);
     saveMe(m);
-    await store.save({ id: m.rid + ':' + n, type: 'rating', rid: m.rid, name: m.name, v: n, ...answers, comment, ts: new Date().toISOString() });
+    await store.save({ id: m.rid + ':' + n, type: 'rating', rid: m.rid, name: safe(m.name), v: n, ...answers, comment: safe(comment), ts: new Date().toISOString() });
   }
   async function saveFavourite(n, comment) {
     const m = me();
     m.fav = n;
     saveMe(m);
-    await store.save({ id: m.rid + ':fav', type: 'fav', rid: m.rid, name: m.name, v: n, comment, ts: new Date().toISOString() });
+    await store.save({ id: m.rid + ':fav', type: 'fav', rid: m.rid, name: safe(m.name), v: n, comment: safe(comment), ts: new Date().toISOString() });
   }
 
   const proto = n => PROTOS.find(p => p.n === n);
