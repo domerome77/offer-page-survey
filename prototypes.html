@@ -2335,10 +2335,14 @@ GO.addonsHead = function () {
     else if (a === 'close-sheet') closeSheet(b.closest('.ph'));
     else if (a === 'leg') { if (p.leg !== b.dataset.leg) { p.leg = b.dataset.leg; render(i, true); } }
     else if (a === 'to-return') { p.leg = 'ret'; render(i, true); }
-    // survey: Continue asks the page around this one to open the rating
-    else if (a === 'continue') { if (ONLY && window.parent !== window) window.parent.postMessage('survey-rate', '*'); }
+
   });
   document.addEventListener('keydown', e => { if (e.key === 'Escape') document.querySelectorAll('.ph').forEach(closeSheet); });
+  // survey: Continue asks the page around this one to open the rating (capture phase, so nothing in the prototype can swallow the click)
+  document.addEventListener('click', e => {
+    const b = e.target.closest && e.target.closest('[data-act="continue"]');
+    if (b && !b.disabled && ONLY && window.parent !== window) window.parent.postMessage('survey-rate', '*');
+  }, true);
   // 9: dragging the gauge picks on the fly; the phone is redrawn around the live range input, which stays in place, so the drag goes on
   function morph(a, b, keep) {
     if (!a.contains(keep)) return a.replaceWith(b);

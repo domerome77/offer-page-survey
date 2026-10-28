@@ -19,11 +19,10 @@
 
   <div class="scrim" id="scrim"></div>
 
-  <form class="card pp__side stack" id="form" novalidate>
+  <form class="card pp__side stack" id="form" role="dialog" aria-modal="true" tabindex="-1" aria-labelledby="title" novalidate>
     <button class="sheet-x" type="button" id="close" aria-label="Close">✕</button>
     <h1 class="h2" id="title">Rate this version</h1>
-    <div class="task task--side small"><b>Your task:</b> a ride from Ljubljana to Venice Airport on Thu 17 Sep, arriving by 10:15. Pick the ride you'd book, then tap <b>Continue</b> to rate this version.</div>
-    <div id="qs"></div>
+        <div id="qs"></div>
     <div>
       <label class="q__label" for="comment">Anything to add? <span class="muted">(optional)</span></label>
       <textarea id="comment" placeholder="What was confusing, what did you like…"></textarea>
@@ -39,7 +38,7 @@
   if (!SV.proto(n)) { location.replace('index.html'); return; }
   const m = SV.me(), pos = m.order.indexOf(n), total = m.order.length, prev = m.done[n] || {};
 
-  document.getElementById('frame').src = 'prototypes.html?v=' + encodeURIComponent(n);
+  document.getElementById('frame').src = 'prototypes.html?v=' + encodeURIComponent(n) + '&r=20261028c';
   document.getElementById('step').textContent = 'Version ' + (pos + 1) + ' of ' + total;
   document.getElementById('title').textContent = 'Rate version ' + (pos + 1);
   document.title = 'Version ' + (pos + 1) + ' · GoOpti survey';
@@ -88,13 +87,14 @@
 
   // small screens: the form is a bottom sheet
   const side = form, scrim = document.getElementById('scrim');
-  const open = on => { side.classList.toggle('is-open', on); scrim.classList.toggle('is-on', on); };
+  const open = on => {
+    side.classList.toggle('is-open', on); scrim.classList.toggle('is-on', on);
+    if (on) setTimeout(() => form.focus({ preventScroll: true }), 250);
+  };
   // Continue inside the prototype asks this page to show the rating
   window.addEventListener('message', e => {
     if (e.source !== document.getElementById('frame').contentWindow || e.data !== 'survey-rate') return;
     open(true);
-    form.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
-    form.classList.remove('is-ping'); void form.offsetWidth; form.classList.add('is-ping');
   });
   document.getElementById('close').addEventListener('click', () => open(false));
   scrim.addEventListener('click', () => open(false));
