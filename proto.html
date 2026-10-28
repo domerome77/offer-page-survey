@@ -6,7 +6,7 @@
 <title>Try a version · GoOpti survey</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Rethink+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="survey.css">
+<link rel="stylesheet" href="survey.css?v=3">
 </head>
 <body class="is-proto">
 <div class="pp">
@@ -27,11 +27,11 @@
       <label class="q__label" for="comment">Anything to add? <span class="muted">(optional)</span></label>
       <textarea id="comment" placeholder="What was confusing, what did you like…"></textarea>
     </div>
-    <p class="small" id="err" style="color:var(--error)" hidden>Please answer all 3 questions.</p>
+    <p class="small" id="err" style="color:var(--error)" hidden>Please answer both questions.</p>
     <button class="btn btn--block" type="submit" id="submit">Save and next</button>
   </form>
 </div>
-<script src="survey.js"></script>
+<script src="survey.js?v=3"></script>
 <script>
 (function () {
   const n = new URLSearchParams(location.search).get('v');

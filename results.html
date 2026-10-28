@@ -7,7 +7,7 @@
 <title>Survey results · GoOpti</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Rethink+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="survey.css">
+<link rel="stylesheet" href="survey.css?v=3">
 </head>
 <body>
 <main class="wrap wrap--wide stack">
@@ -25,9 +25,9 @@
 
   <section class="card stack">
     <h2 class="h2">Ranking</h2>
-    <p class="small muted">Each question is scored 1 (worst) to 5 (best). <b>Overall</b> is the average of the three. <b>Favourite</b> counts how many people picked it as the one they'd book on.</p>
+    <p class="small muted">Each question is scored 1 (worst) to 5 (best). <b>Overall</b> is the average of the two. <b>Favourite</b> counts how many people picked it as the one they'd book on.</p>
     <div class="table-scroll"><table>
-      <thead><tr><th></th><th>Prototype</th><th>Ratings</th><th>Clear</th><th>Easy</th><th>Like</th><th>Overall</th><th>Favourite</th></tr></thead>
+      <thead><tr><th></th><th>Prototype</th><th>Ratings</th><th>Understand</th><th>Like</th><th>Overall</th><th>Favourite</th></tr></thead>
       <tbody id="rows"></tbody>
     </table></div>
   </section>
@@ -51,7 +51,7 @@
   </form>
 </dialog>
 
-<script src="survey.js"></script>
+<script src="survey.js?v=3"></script>
 <script>
 (function () {
   const esc = SV.esc, Q = SV.QUESTIONS;

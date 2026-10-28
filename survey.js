@@ -15,10 +15,9 @@ window.SV = (function () {
     { n: '10', name: 'Two products' },
   ];
 
-  // The three questions, each answered on the same 1–5 face scale.
+  // The two questions, each answered on the same 1–5 face scale.
   const QUESTIONS = [
-    { key: 'clear', label: 'How easy was it to understand the options?', low: 'Very confusing', high: 'Very clear' },
-    { key: 'easy', label: 'How easy was it to pick the ride you wanted?', low: 'Very hard', high: 'Very easy' },
+    { key: 'clear', label: 'How easy was it to understand GoOpti offers?', low: 'Very confusing', high: 'Very clear' },
     { key: 'like', label: 'How much do you like it?', low: 'Not at all', high: 'Love it' },
   ];
   const FACES = ['😣', '🙁', '😐', '🙂', '😍'];
@@ -55,7 +54,7 @@ window.SV = (function () {
       const r = await fetch(CONFIG.SHEET_URL + '?action=list&t=' + Date.now());
       const j = await r.json();
       if (!j.ok) throw new Error(j.error || 'load failed');
-      return j.docs.map(d => Object.assign(d, { clear: num(d.clear), easy: num(d.easy), like: num(d.like) }));
+      return j.docs.map(d => Object.assign(d, { clear: num(d.clear), like: num(d.like) }));
     },
     reset: key => post({ action: 'reset', key }),
   };
