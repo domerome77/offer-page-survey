@@ -1840,7 +1840,7 @@ GO.addonsHead = function () {
         (noFoot ? '' : '<div class="offer__foot"><div class="offer__type t-body-sm c-secondary">' +
           (isSel && o.kind === 'flex' ? '<span>' + typeLabel(o) + '.</span><span>' + t('smsNote') + '</span>' : '<span>' + typeLabel(o) + '</span>') +
           (o.soldOut ? '<span>' + t('noSeats') + '</span>' : '') +
-        '</div>' + (o.soldOut || noInfo ? '' : '<button class="icon-btn offer__info" aria-label="About this ride">' + ic('info-outline', 20, 'icon--muted') + '</button>') + '</div>') +
+        '</div>' + (o.soldOut || noInfo ? '' : '<button class="icon-btn offer__info" data-act="about-ride" aria-label="About this ride">' + ic('info-outline', 20, 'icon--muted') + '</button>') + '</div>') +
       '</div></div>';
   }
   // How it works / What's included open the ride sheet (aboutSheet), as in the client's prototype
@@ -1913,8 +1913,9 @@ GO.addonsHead = function () {
   }
   // About the ride: the client's ride sheet (GoOpti-Offers-2-products.html, the prototype's about-offer) for the shared option
   // the card shows or the private ride; our rules on top: no "±15 min", the window length in words
-  function aboutSheet(c, kind) {
-    const d = c.d, o = kind === 'private' ? d.priv : curShared(c, d.flex.concat(d.fixed), preferred(d.flex));
+  function aboutSheet(c, kind, id) {
+    // id: the ride whose (i) was tapped; kind: the "How it works" / "What's included" links, which show the private ride or the picked shared one
+    const d = c.d, o = (id && find(d, id)) || (kind === 'private' ? d.priv : curShared(c, d.flex.concat(d.fixed), preferred(d.flex)));
     const priv = o.kind === 'private', isSel = c.sel === o.id;
     const title = priv ? t('privateT') : o.kind === 'flex' ? t('a_flexT') : t('a_fixedT');
     const b = s => '<strong style="font-weight: var(--font-weight-bold)">' + s + '</strong>';
@@ -2077,7 +2078,7 @@ GO.addonsHead = function () {
     orShared: '— Or save with shared —', widerPU: 'Wider pick-up time, lower price.',
     flexPUshort: 'Flexible pick-up', fixedNoOther: 'Fixed pick-up time,<br>no other passengers',
   });
-  const info = () => '<button class="icon-btn offer__info" aria-label="About this ride">' + ic('info-outline', 20, 'icon--muted') + '</button>';
+  const info = () => '<button class="icon-btn offer__info" data-act="about-ride" aria-label="About this ride">' + ic('info-outline', 20, 'icon--muted') + '</button>';
   const tag = (tone, text) => '<span class="badge badge--' + tone + '">' + esc(text) + '</span>';
   const group = (kind, body) => '<section class="offer-group">' + groupHead(kind) + '<div class="offer-group__list" role="radiogroup">' + body + '</div></section>';
 
@@ -2331,6 +2332,11 @@ GO.addonsHead = function () {
     if (a === 'pick') choose(i, b.dataset.id);
     else if (a === 'details') openSheet(i, detailsSheet(ctx(i)), b);
     else if (a === 'about') openSheet(i, aboutSheet(ctx(i), b.dataset.kind), b);
+    else if (a === 'about-ride') {
+      const hit = b.closest('.offer, .vopt, .vpanel, .vcard');
+      const h = hit && hit.querySelector('.offer__hit[data-id], [data-act="pick"][data-id]');
+      openSheet(i, aboutSheet(ctx(i), null, h && h.dataset.id), b);
+    }
     else if (a === 'choose') { choose(i, b.dataset.id); closeSheet(b.closest('.ph')); }
     else if (a === 'close-sheet') closeSheet(b.closest('.ph'));
     else if (a === 'leg') { if (p.leg !== b.dataset.leg) { p.leg = b.dataset.leg; render(i, true); } }
