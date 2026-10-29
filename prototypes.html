@@ -2082,11 +2082,11 @@ GO.addonsHead = function () {
   const tag = (tone, text) => '<span class="badge badge--' + tone + '">' + esc(text) + '</span>';
   const group = (kind, body) => '<section class="offer-group">' + groupHead(kind) + '<div class="offer-group__list" role="radiogroup">' + body + '</div></section>';
 
-  // 1 (v1) — Cards, tags, the base list: the prototype's cards, a line under the route with a tag (Best offer on 2 hours, Exact pick-up time, Just you)
+  // 1 (v1) — Cards, tags, the base list: the prototype's cards, a line under the route with a tag (Best offer on 3 hours, Exact pick-up time, Just you)
   function vTags(c) {
     const d = c.d;
     const foot = (tg, text) => '<div class="offer__foot"><div class="vfoot t-body-sm c-secondary">' + (tg || '') + '<span>' + text + '</span></div>' + info() + '</div>';
-    const flexFoot = o => foot(o.id === 'flex2' ? tag('success', t('bestOffer')) : '', t('within')(o.w / 60));
+    const flexFoot = o => foot(o.id === 'flex3' ? tag('success', t('bestOffer')) : '', t('within')(o.w / 60));
     return group('shared', d.flex.map(o => card(c, o, null, null, true, flexFoot(o))).join('') +
         card(c, d.fixed, null, null, true, foot(tag('neutral', t('exactPU')), t('noWait')))) +
       group('private', card(c, d.priv, null, null, true, foot(tag('success', t('justYou')), t('noStops')))) +
@@ -2258,7 +2258,7 @@ GO.addonsHead = function () {
   if (ONLY) document.documentElement.classList.add('is-single');
   const VARIANTS = [
     // 1: the base list of the new edition, the others are measured against it (27.10.2026; Figma v1 of GoOpti Presentations)
-    { n: '1', name: 'Cards, tags', render: vTags, def: sharedDefault },
+    { n: '1', name: 'Cards, tags', render: vTags, def: d => d.flex.find(o => o.id === 'flex3' && !o.soldOut) || sharedDefault(d) },
     // 2: the second to weigh against 1 (27.10.2026; Figma v2)
     { n: '2', name: 'Pick-up and drop-off', render: vColumns, def: sharedDefault },
     // 3: the third (27.10.2026; Figma v3)
