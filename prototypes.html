@@ -2191,7 +2191,9 @@ GO.addonsHead = function () {
         '<div class="offer-group__list" role="radiogroup">' +
           opt(d.fixed, EMOJI.fixed, t('exactPU'), pickLabel(d.fixed)) +
           d.flex.slice().reverse().map(o => opt(o, EMOJI[o.id], t('within')(o.w / 60), pickLabel(o))).join('') +
-      '</div></section>' + trust();
+      '</div>' +
+      // the drop-off promise under the shared rides, as in 4 (29.10.2026)
+      '<p class="vpanel__note vnote-check t-body-sm c-secondary" style="padding-left:0;padding-right:0">' + ic('check', 16) + '<span>' + t('dropGuar')(fromMin(d.fixed.arr)) + '</span></p></section>' + trust();
   }
 
   // 7 (v6) — Tabs on the card: 3 / 2 / 1 hours on tabs over the top of the flexible card, the title and the price on one line;

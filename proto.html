@@ -38,7 +38,7 @@
   if (!SV.proto(n)) { location.replace('index.html'); return; }
   const m = SV.me(), pos = m.order.indexOf(n), total = m.order.length, prev = m.done[n] || {};
 
-  document.getElementById('frame').src = 'prototypes.html?v=' + encodeURIComponent(n) + '&r=20261029a';
+  document.getElementById('frame').src = 'prototypes.html?v=' + encodeURIComponent(n) + '&r=20261029b';
   document.getElementById('step').textContent = 'Version ' + (pos + 1) + ' of ' + total;
   document.getElementById('title').textContent = 'Rate version ' + (pos + 1);
   document.title = 'Version ' + (pos + 1) + ' · GoOpti survey';
