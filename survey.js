@@ -8,7 +8,6 @@ window.SV = (function () {
     { n: '4', name: 'Panels with radios' },
     { n: '5', name: 'Private first' },
     { n: '6', name: '1+2' },
-    { n: '7', name: 'Tabs on the card' },
     { n: '8', name: 'List, headings inside' },
     { n: '9', name: 'Slider' },
     { n: '9a', name: 'Slider, prices' },
